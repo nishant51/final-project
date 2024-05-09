@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rice Variety Classification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        nav {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            margin-left: 20px;
+            margin-top: 10px; /* Added margin-top to push the logo to the top */
+            margin-bottom: 10px; /* Added margin-bottom to create space between logo and navigation */
+        }
+        .logo img {
+            height: 50px; /* Adjust height as needed */
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 90vh; /* Adjusted height to accommodate the navigation bar */
+        }
+        .content {
+            max-width: 600px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            padding-right: 500px; /* Add padding to the right */
+        }
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .preview-container {
+            text-align: center;
+            display: none;
+            width: 300px; /* Fixed width */
+            height: 300px; /* Fixed height */
+            margin: auto;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden; /* Hide overflowing content */
+        }
+        .preview-container img {
+            width: 75%;
+            height: 75%;
+            object-fit: cover; /* Maintain aspect ratio and cover the container */
+        }
+        .result-container {
+            display: none;
+            margin-top: 20px;
+        }
+        .result-container h2 {
+            text-align: center;
+        }
+        /* Media Queries for responsiveness */
+        @media only screen and (max-width: 768px) {
+            .content {
+                width: 95%; /* Adjusted width for smaller screens */
+            }
+        }
+         
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <img src="LOGO.png" alt="Logo">
+        </div>
+        <h1>Rice Variety Classification</h1>
+    </nav>
+    <div class="container">
+        <div class="content">
+            <form action="/classify" method="post" enctype="multipart/form-data" id="uploadForm">
+                <label for="file" class="button">Choose an image</label>
+                <input type="file" id="file" name="image" accept="image/*" required>
+                <button type="button" onclick="previewImage()" class="button">Preview</button>
+                <button type="submit" class="button" id="uploadButton">Upload & Classify</button>
+                <button type="button" onclick="clearData()" class="button">Clear</button>
+            </form>
+            <div id="imagePreview" class="preview-container">
+                <h2>Preview</h2>
+                <img id="preview" src="#" alt="Uploaded Image">
+            </div>
+            <div id="resultDiv" class="result-container">
+                <p id="resultText"></p>
+                <footer>
+                    <p>&copy; Grapal2024. All Rights Reserved.</p>
+                </footer>
+                
+                
+                
+            </div>
+        </div>
+        
+        
+    </div>
+
+    <script>
+        function previewImage() {
+            var preview = document.getElementById('preview');
+            var file = document.getElementById('file').files[0];
+            var reader = new FileReader();
+    
+            reader.onloadend = function() {
+                preview.src = reader.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            }
+    
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+    
+        function clearData() {
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('resultDiv').style.display = 'none';
+            document.getElementById('file').value = '';
+            alert("Form is cleared.");
+        }
+    
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+    
+            fetch('/classify', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('resultText').innerText = "Predicted Class: " + data.predicted_class;
+                document.getElementById('resultDiv').style.display = 'block';
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    
+        document.getElementById('uploadButton').addEventListener('click', function(event) {
+            var fileInput = document.getElementById('file');
+            if (fileInput.files.length === 0) {
+                alert("Please select an image.");
+                event.preventDefault(); // Prevent the form from being submitted
+            }
+        });
+    </script>
+    
+</body>
+</html>
