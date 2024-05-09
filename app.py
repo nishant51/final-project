@@ -17,7 +17,7 @@ model = load_model(model_path)
 @app.route('/model')
 def download_model():
     return send_file(model_path, as_attachment=True) 
-
+#changes for the main file 
 # Define a function to preprocess the uploaded image
 def preprocess_image(img):
     img = img.resize((299, 299))
